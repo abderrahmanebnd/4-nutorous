@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 dotenv.config({
   path: './config.env', // this connet make our defined env in the node env
 });
-// console.log(app.get('env')); ==> development
+// console.log(app.get('env')); => development
 // console.log(process.env);
 
 const DB = process.env.DATABASE.replace(
