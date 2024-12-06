@@ -1,24 +1,39 @@
 const Tour = require('./../models/tourModel.js');
 
 // JSend specification is a send format {status,data}
-exports.getAllTours = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length, // not part of JSend
-    // data: {
-    //   tours,
-    // },
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find(); // all the tours from the tours collection
+    res.status(200).json({
+      status: 'success',
+      results: tours.length, // not part of JSend
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
-exports.getTour = (req, res) => {
-  // const tour = tours.find((item) => item.id === req.params.id);
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour,
-  //   },
-  // });
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 exports.createTour = async (req, res) => {
   try {
