@@ -1,33 +1,5 @@
 const Tour = require('./../models/tourModel.js');
 
-// const tours = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-// );
-
-// Lesson 64:param middleware
-
-// exports.checkID = (req, res, next, val) => {
-//   const id = req.params.id * 1; // in js if u have a "string" looks like a number ("1","2"..) and then you multiply it with another number it will become a "number".
-
-//   if (id > tours.length) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: 'Invalid ID !',
-//     });
-//   }
-//   next();
-// };
-
-exports.checkBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      // bad request
-      status: 'fail',
-      message: 'Missing name or price',
-    });
-  }
-  next();
-};
 // JSend specification is a send format {status,data}
 exports.getAllTours = (req, res) => {
   res.status(200).json({
@@ -48,15 +20,25 @@ exports.getTour = (req, res) => {
   //   },
   // });
 };
-
-exports.createTour = (req, res) => {
-  res.status(201),
-    json({
+exports.createTour = async (req, res) => {
+  try {
+    // const newTour = new Tour({});
+    // newTour.save();
+    console.log(req.body);
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
       status: 'success',
-      // data: {
-      //   tour: newTour,
-      // },
+      data: {
+        tour: newTour,
+      },
     });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: 'Fail',
+      message: 'Invalid data sent!',
+    });
+  }
 };
 
 exports.updatedTour = (req, res) => {
