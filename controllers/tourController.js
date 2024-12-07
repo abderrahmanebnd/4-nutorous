@@ -56,17 +56,29 @@ exports.createTour = async (req, res) => {
   }
 };
 
-exports.updatedTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: 'Updated tour...',
-    },
-  });
+exports.updatedTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'Fail',
+      message: err,
+    });
+  }
 };
 
 exports.deleteTour = (req, res) => {
   //we use the status code of 204 in the delete method which means "No Content" because when we delete a resource we do not send any data back to the client.
+
   res.status(204).json({
     status: 'success',
     data: null, // null means here that the ressourse have deleted
