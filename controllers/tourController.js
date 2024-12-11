@@ -4,24 +4,31 @@ const Tour = require('./../models/tourModel.js');
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD THE QUERY
-    // 1- Filtering
+    // 1A) Filtering
     const queryObj = { ...req.query };
-    const excludeFields = ['page', 'limit', '', 'fields'];
+    const excludeFields = ['page', 'limit', 'sort', 'fields'];
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    // 2- Advanced Filtering
+    // 1B) Advanced Filtering
     let queryStr = JSON.stringify(queryObj);
     queryStr = JSON.parse(
       queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`),
     );
 
-    console.log(queryStr);
     // {duration:{$gte:5}}
     // {duration:{gte:"5"}}
     // gte,gt,lte,lt
+    let query = Tour.find(queryStr);
 
+    // 2) Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+      // (sort ratingAverage ) here rating average is the second criteria to sort with in postman do sort=price,averageRating with the comma
+    } else {
+      query = query.sort('-createdAt');
+    }
     // EXECUTE THE QUERY
-    const query = Tour.find(queryStr);
     const tours = await query;
 
     // SEND RESPONSE
@@ -68,7 +75,6 @@ exports.createTour = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
     res.status(400).json({
       status: 'Fail',
       message: err,
