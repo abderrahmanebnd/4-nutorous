@@ -3,7 +3,16 @@ const Tour = require('./../models/tourModel.js');
 // JSend specification is a send format {status,data}
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find(); // all the tours from the tours collection
+    // BUILD THE QUERY
+    const queryObj = { ...req.query };
+    const excludeFields = ['page', 'limit', 'limit', 'fields'];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    // EXECUTE THE QUERY
+    const query = Tour.find(queryObj);
+    const tours = await query;
+
+    // SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length, // not part of JSend

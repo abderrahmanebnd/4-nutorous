@@ -9,6 +9,7 @@ const DB = process.env.DATABASE.replace(
   '<DB_PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
+jjj;
 
 mongoose
   .connect(DB, {
