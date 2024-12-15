@@ -89,9 +89,16 @@ tourSchema.pre(/^find/, function (next) {
 });
 tourSchema.post(/^find/, function (docs, next) {
   // docs: all the docs returned from the query
-  console.log(`Query took ${Date.now() - this.start} milliseconds `);
-  console.log(docs);
+  // console.log(`Query took ${Date.now() - this.start} milliseconds `);
 
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+
+tourSchema.pre('aggregate', function (next) {
+  this.pipleline.unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this);
   next();
 });
 
