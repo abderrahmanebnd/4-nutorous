@@ -53,8 +53,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(), // In mongoose, it  automatically be converted to today date.
       select: false,
     },
-    startDates: {
-      type: [Date],
+    startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -68,12 +70,28 @@ tourSchema.virtual('durationWeeks').get(function () {
   // this here is refered to the current document
 });
 
-tourSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true });
+// tourSchema.pre('save', function (next) {
+//   this.slug = slugify(this.name, { lower: true });
+//   next();
+// });
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc); // the created or the saved document
+//   next();
+// });
+
+//  QUERY MIDDLEWARE
+// tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  // this here point to the current query (like a query object) not the current doc
+  this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
   next();
 });
-tourSchema.post('save', function (doc, next) {
-  console.log(doc); // the created or the saved document
+tourSchema.post(/^find/, function (docs, next) {
+  // docs: all the docs returned from the query
+  console.log(`Query took ${Date.now() - this.start} milliseconds `);
+  console.log(docs);
+
   next();
 });
 
