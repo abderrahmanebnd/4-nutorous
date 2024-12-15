@@ -53,8 +53,16 @@ const tourSchema = new mongoose.Schema({
   startDates: {
     type: [Date],
   },
+  {
+    toJSON :{virtuals:true},
+    toObject :{virtuals:true}
+  }
 });
 
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+  // this here is refered to the current document
+});
 // is like a convention to always put the models name to uppercase
 const Tour = mongoose.model('Tour', tourSchema);
 
