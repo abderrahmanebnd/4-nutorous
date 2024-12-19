@@ -1,4 +1,5 @@
 const catchAsync = require('../utils/catchAsync.js');
+const AppError = require('../utils/AppError.js');
 const Tour = require('./../models/tourModel.js');
 const APIFeatures = require('./../utils/apiFeatures.js');
 // JSend specification is a send format {status,data}
@@ -31,6 +32,11 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with this ID'));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -66,6 +72,11 @@ exports.updatedTour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+
+  if (!tour) {
+    return next(new AppError('No tour found with this ID'));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -77,7 +88,12 @@ exports.updatedTour = catchAsync(async (req, res, next) => {
 exports.deleteTour = catchAsync(async (req, res, next) => {
   //we use the status code of 204 in the delete method which means "No Content" because when we delete a resource we do not send any data back to the client.
 
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with this ID'));
+  }
+
   res.status(204).json({
     status: 'success',
     data: null, // null means here that the ressourse have deleted
