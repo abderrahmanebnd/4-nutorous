@@ -1,5 +1,5 @@
 const catchAsync = require('../utils/catchAsync.js');
-const AppError = require('../utils/AppError.js');
+const AppError = require('../utils/appError.js');
 const Tour = require('./../models/tourModel.js');
 const APIFeatures = require('./../utils/apiFeatures.js');
 // JSend specification is a send format {status,data}
