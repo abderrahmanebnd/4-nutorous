@@ -24,8 +24,13 @@ const userSchema = new mongoose.Schema({
     minLength: 8,
   },
   passwordConfirm: {
-    type: Boolean,
+    type: String,
     required: [true, 'Please confirm your password'],
+    // validate: {
+    //   validator: function (el) {
+    //     return el === this.password;
+    //   },
+    // },
   },
 });
 

@@ -6,10 +6,11 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
+  // Handle duplicate key error
+  const duplicateField = Object.keys(err.keyValue)[0];
+  const duplicateValue = err.keyValue[duplicateField];
 
-  const message = `Duplicate field value: ${value}. Please use another value!`;
+  const message = `Duplicate value for ${duplicateField}: ${duplicateValue}. Please use a different ${duplicateField}.`;
   return new AppError(message, 400);
 };
 const handleValidationErrorDB = (err) => {
@@ -39,7 +40,7 @@ const sendErrorProd = (err, res) => {
     // Programming or other unknown error: don't leak error details
   } else {
     // 1) Log error
-    console.error('ERROR 💥', err);
+    // console.error('ERROR 💥', err);
 
     // 2) Send generic message
     res.status(500).json({
@@ -59,11 +60,12 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+    console.log(err.name);
+    console.log(error.name);
 
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError')
-      error = handleValidationErrorDB(error);
+    if (err.name === 'CastError') error = handleCastErrorDB(error);
+    if (err.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (err.name === 'ValidationError') error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
   }
