@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -26,12 +27,23 @@ const userSchema = new mongoose.Schema({
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
-    // validate: {
-    //   validator: function (el) {
-    //     return el === this.password;
-    //   },
-    // },
+    validate: {
+      validator: function (el) {
+        return el === this.password;
+      },
+      message: 'Passwords are not the same !',
+    },
   },
+});
+
+// we do the encription in this middleware because it should happens between "we recieve the data" and  "it will be stored in the database "
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  // the more the cost is higher (here is 12 and by default is 10) the more the hashing is CPU intensive and the better the password will be encrypted
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
 });
 
 const User = mongoose.model('User', userSchema);
