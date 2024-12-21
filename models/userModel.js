@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same !',
     },
   },
+  passwordChangedAt: Date,
 });
 
 // we do the encription in this middleware because it should happens between "we recieve the data" and  "it will be stored in the database "
@@ -56,6 +57,18 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+userSchema.methods.changedPasswordAfter = function (JWTTimesstamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+    return JWTTimesstamp < changedTimestamp;
+  }
+
+  // false means not changed
+  return false;
+};
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
