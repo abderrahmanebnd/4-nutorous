@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const catchAsync = require('../utils/catchAsync');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'A user must have a password'],
     minLength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -45,6 +47,14 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// the candidatePassword is the one coming from the user when he tries to log in (not encrypted)
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 

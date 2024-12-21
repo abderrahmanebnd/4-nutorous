@@ -50,6 +50,8 @@ const sendErrorProd = (err, res) => {
   }
 };
 
+// this is the global erro handler
+
 module.exports = (err, req, res, next) => {
   // console.log(err.stack);
 
