@@ -54,3 +54,25 @@ exports.login = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check if it is exists
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  console.log(token);
+
+  if (!token) {
+    return next(new AppError('Tou are not logged in!', 401));
+  }
+  // 2) Verification token
+
+  // 3) Check if user still exists
+
+  // 4) Check if user changed password after the JWT token was issued
+  next();
+});
