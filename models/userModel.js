@@ -83,7 +83,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimesstamp) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-  // this token is not encrypted because we need to send it to the user, and the user will use it to reset his password
+  // this token  the user will use it to reset his password
 
   const resetToken = crypto.randomBytes(32).toString('hex');
 
