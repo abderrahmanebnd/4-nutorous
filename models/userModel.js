@@ -1,7 +1,9 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const catchAsync = require('../utils/catchAsync');
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -45,6 +47,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // we do the encription in this middleware because it should happens between "we recieve the data" and  "it will be stored in the database "
@@ -77,6 +81,24 @@ userSchema.methods.changedPasswordAfter = function (JWTTimesstamp) {
   // false means not changed
   return false;
 };
+
+userSchema.methods.createPasswordResetToken = function () {
+  // this token is not encrypted because we need to send it to the user, and the user will use it to reset his password
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // we store the encrypted token in the database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // we store the unencrypted token in the database
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return resetToken;
+};
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
