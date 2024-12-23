@@ -6,8 +6,8 @@ const APIFeatures = require('./../utils/apiFeatures.js');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
-  req.query.sort = '-ratingAverage,price';
-  req.query.fields = 'name,price,ratingAverage,summary,difficulty';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
 
@@ -19,7 +19,6 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
   const tours = await features.query;
-
   // SEND RESPONSE
   res.status(200).json({
     status: 'success',

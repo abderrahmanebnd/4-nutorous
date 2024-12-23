@@ -103,17 +103,17 @@ tourSchema.virtual('durationWeeks').get(function () {
 //  QUERY MIDDLEWARE
 // tourSchema.pre('find', function (next) {
 tourSchema.pre(/^find/, function (next) {
-  // this here point to the current query (like a query object) not the current doc
-  this.find({ secretTour: { $ne: true } });
+  // "this" here point to the current query (like a query object) not the current doc
+  this.find({ secretTour: { $ne: false } });
   this.start = Date.now();
   next();
 });
-tourSchema.post(/^find/, function (docs, next) {
-  // docs: all the docs returned from the query
-  // console.log(`Query took ${Date.now() - this.start} milliseconds `);
+// tourSchema.post(/^find/, function (docs, next) {
+//   // docs: all the docs returned from the query
+//   // console.log(`Query took ${Date.now() - this.start} milliseconds `);
 
-  next();
-});
+//   next();
+// });
 
 // AGGREGATION MIDDLEWARE
 
