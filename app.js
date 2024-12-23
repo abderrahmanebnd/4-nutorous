@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -7,19 +8,14 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
-app.use(express.json());
-app.use(express.static(`./public`));
-
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
 
 // 1) GLOBAL MIDDLEWARES
 
-// Limit requests from same API
+//  to set secure headers
+app.use(helmet());
 
 // the limiter here is a middleware
+// limit the number of requests from the same IP
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000, // window means in how much time we want to limit the request (in this case 100 request from the same IP in 1 hour)
@@ -31,8 +27,23 @@ app.use('/api', limiter); // block also all the routes that start with /api
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
-// handle unhadled routes
+// body parser, reading data from the body into req.body
+app.use(
+  express.json({
+    limit: '10kb',
+  }),
+);
 
+// serving static files
+app.use(express.static(`${__dirname}/public`));
+
+// test middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
+// handle unhadled routes
 // if we are able to reach this part, the tourRouter,userRouter did not catch it
 app.all('*', (req, res, next) => {
   // if the next func receive an argument, express automatically know that this is an error and there for it will pass all the middlware in the middleware stack and give us back the error( goes to the error global middleware)
