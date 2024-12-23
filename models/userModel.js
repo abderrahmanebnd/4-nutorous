@@ -49,6 +49,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // we do the encription in this middleware because it should happens between "we recieve the data" and  "it will be stored in the database "
@@ -67,6 +72,13 @@ userSchema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
 
   // we subtract 1 second because sometimes the token is created before the password is changed
+  next();
+});
+
+// this here points to the current document and this called query middleware
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 
