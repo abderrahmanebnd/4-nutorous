@@ -1,11 +1,12 @@
 const express = require('express');
-const app = express();
+const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
+const app = express();
 app.use(express.json());
 app.use(express.static(`./public`));
 
@@ -13,6 +14,19 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+// 1) GLOBAL MIDDLEWARES
+
+// Limit requests from same API
+
+// the limiter here is a middleware
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000, // window means in how much time we want to limit the request (in this case 100 request from the same IP in 1 hour)
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+
+app.use('/api', limiter); // block also all the routes that start with /api
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
