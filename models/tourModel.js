@@ -150,8 +150,15 @@ tourSchema.pre(/^find/, function (next) {
 //   next();
 // });
 
-// AGGREGATION MIDDLEWARE
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
 
+// AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function (next) {
   this.pipleline?.unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this);
