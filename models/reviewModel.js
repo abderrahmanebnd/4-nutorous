@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Tour = require('./tourModel-v1-after-aut');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -29,6 +28,14 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
+
+// QUERY MIDDLEWARE
+
+// reviewSchema.pre('save', function (next) {
+//   this.populate({
+//     path: 'user',
+//   });
+// });
 
 const Review = mongoose.model('Review', reviewSchema);
 
