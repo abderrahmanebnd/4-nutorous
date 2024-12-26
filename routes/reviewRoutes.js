@@ -5,7 +5,7 @@ const {
 } = require('../controllers/reviewController');
 const { protect, restrictTo } = require('../controllers/authController');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true }); // this means that we will have access to the tourId from the tourRouter
 
 router
   .route('/')

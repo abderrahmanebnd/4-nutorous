@@ -12,10 +12,12 @@ const {
 } = require('./../controllers/tourController');
 
 const { protect, restrictTo } = require('./../controllers/authController');
-const reviewController = require('./../controllers/reviewController');
+const reviewRouter = require('./../routes/reviewRoutes');
 
 const router = express.Router();
 // router.param('id', checkID);
+
+router.use('/:tourId/reviews', reviewRouter); // this is a middleware that will redirect the request to the reviewRouter
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
@@ -32,7 +34,7 @@ router
   .patch(updatedTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
-router
-  .route('/:tourId/reviews')
-  .post(protect, restrictTo('user'), reviewController.createReview);
+// router
+//   .route('/:tourId/reviews')
+//   .post(protect, restrictTo('user'), reviewController.createReview);
 module.exports = router;
