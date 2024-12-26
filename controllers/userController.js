@@ -81,4 +81,8 @@ exports.updateUser = (req, res) => {
     message: 'This route is not yet defined !',
   });
 };
+
+// Do not update passwords with this!
+
+exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);

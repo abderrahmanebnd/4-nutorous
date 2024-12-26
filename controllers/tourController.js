@@ -44,62 +44,9 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
-
-// try {
-//   // const newTour = new Tour({});
-//   // newTour.save();
-
-// } catch (err) {
-//   res.status(400).json({
-//     status: 'Fail',
-//     message: err,
-//   });
-// }
-// };
-
-exports.updatedTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(new AppError('No tour found with this ID'));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
+exports.createTour = factory.createOne(Tour);
+exports.updatedTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
-
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   //we use the status code of 204 in the delete method which means "No Content" because when we delete a resource we do not send any data back to the client.
-
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
-
-//   if (!tour) {
-//     return next(new AppError('No tour found with this ID'));
-//   }
-
-//   res.status(204).json({
-//     status: 'success',
-//     data: null, // null means here that the ressourse have deleted
-//   });
-// });
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
