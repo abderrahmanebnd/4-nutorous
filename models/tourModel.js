@@ -118,6 +118,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   // this here is refered to the current document
 });
 
+// Virtual Populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour', // this is the name of the field in the other model (Review model) where the reference to the current model is stored
+  localField: '_id',
+});
+
 // Document middleware runs before save() or create().
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });

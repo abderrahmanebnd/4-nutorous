@@ -31,17 +31,23 @@ const reviewSchema = new mongoose.Schema(
 
 // QUERY MIDDLEWARE
 
-// reviewSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'user',
-//     select: 'name',
-//   }).populate({
-//     path: 'tour',
-//     select: 'name photo',
-//   });
-//   next();
-// });
+reviewSchema.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'user',
+  //   select: 'name photo',
+  // }).populate({
+  //   path: 'tour',
+  //   select: 'name ',
+  // });
+  this.populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
+
+// virtuals populate is like keeping an array contains the reviewsIds in the tours (child referencing) but not being persistent in the database
