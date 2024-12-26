@@ -31,10 +31,15 @@ const reviewSchema = new mongoose.Schema(
 
 // QUERY MIDDLEWARE
 
-// reviewSchema.pre('save', function (next) {
+// reviewSchema.pre(/^find/, function (next) {
 //   this.populate({
 //     path: 'user',
+//     select: 'name',
+//   }).populate({
+//     path: 'tour',
+//     select: 'name photo',
 //   });
+//   next();
 // });
 
 const Review = mongoose.model('Review', reviewSchema);
