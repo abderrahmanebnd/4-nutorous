@@ -69,14 +69,14 @@ const userSchema = new mongoose.Schema({
 //   next();
 // });
 
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
+// userSchema.pre('save', function (next) {
+//   if (!this.isModified('password') || this.isNew) return next();
 
-  this.passwordChangedAt = Date.now() - 1000;
+//   this.passwordChangedAt = Date.now() - 1000;
 
-  // we subtract 1 second because sometimes the token is created before the password is changed
-  next();
-});
+//   // we subtract 1 second because sometimes the token is created before the password is changed
+//   next();
+// });
 
 // this here points to the current document and this called query middleware
 userSchema.pre(/^find/, function (next) {
