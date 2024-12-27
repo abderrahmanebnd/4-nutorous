@@ -22,16 +22,21 @@ router.use('/:tourId/reviews', reviewRouter); // this is a middleware that will 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 router.route('/tour-stats').get(getTourStats);
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
 
 // router.route('/api/v1/tours').get(getAllTours).post(createTour);
-router.route('/').get(protect, getAllTours).post(createTour);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
 router
   // .route('/api/v1/tours/:id')
   .route('/:id')
   .get(getTour)
-  .patch(updatedTour)
+  .patch(protect, restrictTo('admin', 'lead-guide'), updatedTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 // router
