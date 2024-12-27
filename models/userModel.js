@@ -41,11 +41,13 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please confirm your password'],
     validate: {
       validator: function (el) {
+        console.log({ el }, { password: this.password });
         return el === this.password;
       },
       message: 'Passwords are not the same!',
     },
   },
+  
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
