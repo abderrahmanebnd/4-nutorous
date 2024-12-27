@@ -60,23 +60,23 @@ const userSchema = new mongoose.Schema({
 
 // we do the encription in this middleware because it should happens between "we recieve the data" and  "it will be stored in the database "
 
-// userSchema.pre('save', async function (next) {
-//   if (!this.isModified('password')) return next();
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
 
-//   // the more the cost is higher (here is 12 and by default is 10) the more the hashing is CPU intensive and the better the password will be encrypted
-//   this.password = await bcrypt.hash(this.password, 12);
-//   this.passwordConfirm = undefined;
-//   next();
-// });
+  // the more the cost is higher (here is 12 and by default is 10) the more the hashing is CPU intensive and the better the password will be encrypted
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
 
-// userSchema.pre('save', function (next) {
-//   if (!this.isModified('password') || this.isNew) return next();
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
 
-//   this.passwordChangedAt = Date.now() - 1000;
+  this.passwordChangedAt = Date.now() - 1000;
 
-//   // we subtract 1 second because sometimes the token is created before the password is changed
-//   next();
-// });
+  // we subtract 1 second because sometimes the token is created before the password is changed
+  next();
+});
 
 // this here points to the current document and this called query middleware
 userSchema.pre(/^find/, function (next) {
