@@ -30,6 +30,8 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true }); // this means that the combination of tour and user should be unique
+
 // QUERY MIDDLEWARE
 
 reviewSchema.pre(/^find/, function (next) {
