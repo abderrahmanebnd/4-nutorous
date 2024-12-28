@@ -55,18 +55,35 @@ ReviewSchema.statics.calcAverageRatings = async function (tourId) {
       },
     },
   ]);
-  console.log(stats); // this will return an array of objects that contains the _id, nRating, avgRating
-
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].nRating,
-    ratingsAverage: stats[0].avgRating,
-  });
+  // console.log(stats); // this will return an array of objects that contains the _id, nRating, avgRating
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
 // this is a post middleware because we want to run the calcAverageRatings after the review is saved and the "post" does not have access to the next function
 reviewSchema.post('save', function (next) {
   // this.constructor points to the model
   this.constructor.calcAverageRatings(this.tour);
+});
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // this here is the query
+  this.r = await this.findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // this.r here is the document that we saved in the pre middleware
+  await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
