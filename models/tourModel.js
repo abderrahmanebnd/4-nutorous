@@ -114,8 +114,9 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-tourSchema.index({ price: 1, ratingsAverage: -1 }); // this means coumpound index which help to sort the data in the database and for example when we search for price it will be faster
+tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;

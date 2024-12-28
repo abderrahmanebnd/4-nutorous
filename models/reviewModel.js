@@ -43,7 +43,7 @@ reviewSchema.pre(/^find/, function (next) {
 });
 // Static method which is called on the model itself like in the oop paradign where we call the method on the class itself
 
-ReviewSchema.statics.calcAverageRatings = async function (tourId) {
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
   // "this" here is the model
   const stats = await this.aggregate([
     {

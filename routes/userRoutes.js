@@ -34,8 +34,9 @@ router.get('/me', getMe, getUser);
 router.patch('/updateMe', updateMe);
 router.delete('/deleteMe', deleteMe);
 
-router.route('/').get(getAllUsers).post(createUser);
 router.use(restrictTo('admin')); // all routes after this will be restricted to admin
+
+router.route('/').get(getAllUsers).post(createUser);
 
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
