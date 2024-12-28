@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -32,18 +33,40 @@ const reviewSchema = new mongoose.Schema(
 // QUERY MIDDLEWARE
 
 reviewSchema.pre(/^find/, function (next) {
-  // this.populate({
-  //   path: 'user',
-  //   select: 'name photo',
-  // }).populate({
-  //   path: 'tour',
-  //   select: 'name ',
-  // });
   this.populate({
     path: 'user',
     select: 'name photo',
   });
   next();
+});
+// Static method which is called on the model itself like in the oop paradign where we call the method on the class itself
+
+ReviewSchema.statics.calcAverageRatings = async function (tourId) {
+  // "this" here is the model
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour', // this is the field that we want to group by which all the reviews have this field equal to the tourId
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  console.log(stats); // this will return an array of objects that contains the _id, nRating, avgRating
+
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].nRating,
+    ratingsAverage: stats[0].avgRating,
+  });
+};
+
+// this is a post middleware because we want to run the calcAverageRatings after the review is saved and the "post" does not have access to the next function
+reviewSchema.post('save', function (next) {
+  // this.constructor points to the model
+  this.constructor.calcAverageRatings(this.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
