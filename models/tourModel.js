@@ -171,11 +171,11 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  this.pipleline?.unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this);
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipleline?.unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline);
+//   next();
+// });
 
 // is like a convention to always put the models name to uppercase
 const Tour = mongoose.model('Tour', tourSchema);
